@@ -30,15 +30,33 @@ class RecipeController extends Controller
         return view('home', compact('recipes', 'popular'));
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $recipes =  Recipe::select('recipes.id', 'recipes.title', 'recipes.description', 'recipes.created_at', 'recipes.views', 'recipes.image', 'users.name')
+        $filters = $request->all();
+        // dd($filters);
+        $query =  Recipe::select('recipes.id', 'recipes.title', 'recipes.description', 'recipes.created_at', 'recipes.views', 'recipes.image', 'users.name')
             ->join('users', 'users.id', '=', 'recipes.user_id')
-            ->orderBy('recipes.created_at', 'desc')
-            ->get();
+            ->orderBy('recipes.created_at', 'desc');
+
+        if (isset($filters)) {
+            if (isset($filters['categories'])) {
+                $query->whereIn('category_id', $filters['categories']);
+            }
+        }
+
+        // if (isset($filters['rating'])) {
+        //     $query->where('rating', '>=', $filters['rating']);
+        // }
+
+        if (isset($filters['title'])) {
+            $query->where('title', 'like', '%' . $filters['title'] . '%');
+        }
+
+        $recipes = $query->get();
+        // dd($recipes);
 
         $categories = Category::all();
-        return view('recipes.index', compact('recipes'));
+        return view('recipes.index', compact('recipes', 'categories'));
     }
 
     /**

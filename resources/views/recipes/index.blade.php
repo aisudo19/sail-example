@@ -17,7 +17,7 @@
       </a>
       @endforeach
     </div>
-    <div class="col-span-1 bg-white rounded p-4">
+    <div class="col-span-1 bg-white rounded p-4 h-max sticky top-4">
       <form action="{{route('recipe.index')}}" method="get">
         <h3 class="text-2xl font-bold mb-2 flex text-gray-800">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -43,22 +43,20 @@
         </div>
         <div class="mb-4 p-6 border border-gray-300">
           <label class="text-lg text-gray-800">カテゴリー</label>
+          @foreach($categories as $category)
           <div class="ml-4 mb-2">
-            <input type="checkbox" name="rating" value="0" id="rating0" />
-            <label for="rating0">指定しない</label>
+            <input type="checkbox" name="categories[]" value="{{$category['id']}}" id="category{{$category['id']}}" />
+            <label for="category{{$category['id']}}">{{$category['name']}}</label>
           </div>
-          <div class="ml-4 mb-2">
-            <input type="checkbox" name="rating" value="3" id="rating3" />
-            <label for="rating3">3以上</label>
-          </div>
-          <div class="ml-4 mb-2">
-            <input type="checkbox" name="rating" value="4" id="rating4" />
-            <label for="rating4">4以上</label>
-          </div>
+          @endforeach
         </div>
-
-
+        <input type="text" name="title" value="" placeholder="レシピ名を入力" class="border border-gray-300 p-2 mb-4 w-full">
+        <div class="text text-center display-block">
+          <button type="submit"
+            class="bg-green-600 text-white hover:bg-green-700 font-bold py-2 px-4 rounded">検索</button>
+        </div>
       </form>
     </div>
   </div>
+
 </x-app-layout>
