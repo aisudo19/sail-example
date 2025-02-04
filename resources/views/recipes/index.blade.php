@@ -18,6 +18,7 @@
         </div>
       </a>
       @endforeach
+      {{$recipes->links()}}
     </div>
     <div class="col-span-1 bg-white rounded p-4 h-max sticky top-4">
       <form action="{{route('recipe.index')}}" method="get">
@@ -65,9 +66,4 @@
       </form>
     </div>
   </div>
-
-
-
-
-
 </x-app-layout>
