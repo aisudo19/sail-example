@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RecipeController extends Controller
 {
@@ -34,8 +35,10 @@ class RecipeController extends Controller
     {
         $filters = $request->all();
         // dd($filters);
-        $query =  Recipe::select('recipes.id', 'recipes.title', 'recipes.description', 'recipes.created_at', 'recipes.views', 'recipes.image', 'users.name')
+        $query =  Recipe::select('recipes.id', 'recipes.title', 'recipes.description', 'recipes.created_at', 'recipes.views', 'recipes.image', 'users.name', DB::raw('AVG(reviews.rating) as rating'))
             ->join('users', 'users.id', '=', 'recipes.user_id')
+            ->leftJoin('reviews', 'recipes.id', '=', 'reviews.recipe_id')
+            ->groupBy('recipes.id')
             ->orderBy('recipes.created_at', 'desc');
 
         if (isset($filters)) {
@@ -44,9 +47,9 @@ class RecipeController extends Controller
             }
         }
 
-        // if (isset($filters['rating'])) {
-        //     $query->where('rating', '>=', $filters['rating']);
-        // }
+        if (isset($filters['rating'])) {
+            $query->havingRaw('AVG(reviews.rating) >= ' . $filters['rating']);
+        }
 
         if (isset($filters['title'])) {
             $query->where('title', 'like', '%' . $filters['title'] . '%');
@@ -56,7 +59,7 @@ class RecipeController extends Controller
         // dd($recipes);
 
         $categories = Category::all();
-        return view('recipes.index', compact('recipes', 'categories'));
+        return view('recipes.index', compact('recipes', 'categories', 'filters'));
     }
 
     /**
