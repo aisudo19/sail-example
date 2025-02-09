@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Recipe;
+use App\Models\Step;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -80,14 +81,27 @@ class RecipeController extends Controller
     public function store(Request $request)
     {
         $posts = $request->all();
-        // dd($posts);
+        $uuid = Str::uuid()->toString();
+
         Recipe::insert([
-            'id' => Str::uuid(),
+            'id' => $uuid,
             'title' => $posts['title'],
             'description' => $posts['description'],
             'category_id' => $posts['category'],
             'user_id' => Auth::id(),
         ]);
+
+        $steps = [];
+        foreach ($posts['steps'] as $key => $step) {
+            $steps[$key] = [
+                'recipe_id' => $uuid,
+                'step_number' => $key + 1,
+                'description' => $step,
+            ];
+        }
+
+        Step::insert($steps);
+        // dd($steps);
     }
 
     /**
